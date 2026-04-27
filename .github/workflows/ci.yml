@@ -22,14 +22,21 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+        pip install webdriver-manager behave-html-formatter
 
-    - name: Install Google Chrome
-      run: |
-        sudo apt update
-        sudo apt install -y google-chrome-stable
+    # ✅ Install Chrome + Driver automatically
+    - name: Setup Chrome
+      uses: browser-actions/setup-chrome@v1
 
-    - name: Run Tests (BDD + Allure + HTML)
+    # ✅ Install Allure CLI
+    - name: Install Allure
       run: |
+        sudo apt-get update
+        sudo apt-get install -y allure
+
+    - name: Run Tests (BDD + HTML)
+      run: |
+        mkdir -p reports
         behave -f html -o reports/test_report.html --no-capture
 
     - name: Generate Allure Report
