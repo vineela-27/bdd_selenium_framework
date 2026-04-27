@@ -1,26 +1,46 @@
-name: Automation Tests
+name: BDD Selenium Tests
 
 on:
   push:
     branches: [ main ]
+  pull_request:
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
+    - name: Checkout Code
       uses: actions/checkout@v3
 
     - name: Setup Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.10'   # ✅ FIXED
+        python-version: '3.10'
 
-    - name: Install dependencies
+    - name: Install Dependencies
       run: |
+        python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Run Tests
+    # Install Chrome (needed for Selenium)
+    - name: Install Google Chrome
       run: |
-        pytest test_runner.py
+        sudo apt update
+        sudo apt install -y google-chrome-stable
+
+    # Run tests with environment variables from GitHub Secrets
+    - name: Run Tests (BDD + Allure)
+      env:
+        BASE_URL: ${{ secrets.BASE_URL }}
+        VALID_USERNAME: ${{ secrets.VALID_USERNAME }}
+        VALID_PASSWORD: ${{ secrets.VALID_PASSWORD }}
+      run: |
+        behave -f allure_behave.formatter:AllureFormatter -o reports/
+
+    # Upload Allure results as artifact
+    - name: Upload Allure Results
+      uses: actions/upload-artifact@v3
+      with:
+        name: allure-results
+        path: reports/
