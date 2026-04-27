@@ -112,13 +112,7 @@ dmypy.json
 logs/
 reports/
 screenshots/
-behave.ini
-features/
-pages/
-utils/
-test_runner.py
-README.md
-requirements.txt
+
 
 # IDE
 .vscode/

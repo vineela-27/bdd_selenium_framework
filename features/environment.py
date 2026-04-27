@@ -16,7 +16,7 @@ def before_step(context, step):
     print(f"[@StepTime: {timestamp}]")
 
 def after_step(context, step):
-    if step.status == "failed":
+    if step.status == "failed" and hasattr(context, 'driver') and context.driver:
         os.makedirs("reports/screenshots", exist_ok=True)
 
         file_name = f"{step.name.replace(' ', '_')}.png"
@@ -26,18 +26,18 @@ def after_step(context, step):
 
 
 def after_scenario(context, scenario):
-    if scenario.status == "failed":
-        # Capture screenshot as base64 string
-        screenshot_b64 = context.driver.get_screenshot_as_base64()
+    if hasattr(context, 'driver') and context.driver:
+        if scenario.status == "failed":
+            # Capture screenshot as base64 string
+            screenshot_b64 = context.driver.get_screenshot_as_base64()
+            
+            # Embed the screenshot into the HTML report
+            for formatter in context._runner.formatters:
+                if "html" in formatter.name:
+                    formatter.embedding(
+                        mime_type="image/png", 
+                        data=screenshot_b64, 
+                        caption="Failure Screenshot"
+                    )
         
-        # Embed the screenshot into the HTML report
-        for formatter in context._runner.formatters:
-            if "html" in formatter.name:
-                formatter.embedding(
-                    mime_type="image/png", 
-                    data=screenshot_b64, 
-                    caption="Failure Screenshot"
-                )
-
-    if context.driver:
         context.driver.quit()
