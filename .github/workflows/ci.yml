@@ -28,16 +28,32 @@ jobs:
         sudo apt update
         sudo apt install -y google-chrome-stable
 
-    - name: Run Tests (BDD + Allure)
-      env:
-        BASE_URL: ${{ secrets.BASE_URL }}
-        VALID_USERNAME: ${{ secrets.VALID_USERNAME }}
-        VALID_PASSWORD: ${{ secrets.VALID_PASSWORD }}
+    - name: Run Tests (BDD + Allure + HTML)
       run: |
-        behave -f allure_behave.formatter:AllureFormatter -o reports/
+        behave -f html -o reports/test_report.html --no-capture
+
+    - name: Generate Allure Report
+      if: always()
+      run: |
+        allure generate reports/ -o reports/allure-report --clean
 
     - name: Upload Allure Results
+      if: always()
       uses: actions/upload-artifact@v4
       with:
         name: allure-results
         path: reports/
+
+    - name: Upload HTML Report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: html-report
+        path: reports/test_report.html
+
+    - name: Upload Screenshots
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: screenshots
+        path: reports/screenshots/
