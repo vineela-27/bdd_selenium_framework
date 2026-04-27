@@ -2,4 +2,5 @@ selenium
 behave
 pytest
 allure-behave
+behave-html-formatter
 python-dotenv

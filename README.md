@@ -28,7 +28,6 @@ running specific tag in feature file
 --- 
 behave -k @login
 behave -f allure_behave.formatter:AllureFormatter -o reports/
-behave -f html -o reports/report.html
 
 ---
 running only feature file with pytest

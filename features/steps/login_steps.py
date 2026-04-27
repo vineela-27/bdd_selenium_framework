@@ -31,3 +31,7 @@ def step_success(context):
 @then('user should see error message')
 def step_error(context):
     assert "Your username is invalid!" in context.page.get_message()
+
+@then('user should see a non-existent message')
+def step_non_existent(context):
+    assert "This message does not exist" in context.page.get_message()

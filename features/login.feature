@@ -11,3 +11,9 @@ Feature: Login functionality
     When user enters invalid username and password
     And clicks on login button
     Then user should see error message
+
+  Scenario: Test failure screenshot
+    Given user is on login page
+    When user enters valid username and password
+    And clicks on login button
+    Then user should see a non-existent message
