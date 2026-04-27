@@ -1,4 +1,4 @@
-name: BDD Selenium Tests
+name: BDD Selenium Tests (HTML Only)
 
 on:
   push:
@@ -22,49 +22,20 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-        pip install behave-html-formatter webdriver-manager allure-behave
+        pip install behave-html-formatter webdriver-manager
 
-    # ✅ Setup Chrome (includes compatible ChromeDriver)
+    # ✅ Setup Chrome (includes driver)
     - name: Setup Chrome
       uses: browser-actions/setup-chrome@v1
 
-    # ✅ Install Allure CLI
-    - name: Install Allure
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y allure
-
-    # ✅ Run BDD Tests (HTML + Allure)
+    # ✅ Run Tests (HTML report only)
     - name: Run Tests
       run: |
         mkdir -p reports
         behave \
           -f pretty \
           -f html -o reports/test_report.html \
-          -f allure_behave.formatter:AllureFormatter -o reports/allure-results \
           --no-capture
-
-    # ✅ Generate Allure Report
-    - name: Generate Allure Report
-      if: always()
-      run: |
-        allure generate reports/allure-results -o reports/allure-report --clean
-
-    # ✅ Upload Allure Results
-    - name: Upload Allure Results
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: allure-results
-        path: reports/allure-results
-
-    # ✅ Upload Allure HTML Report
-    - name: Upload Allure Report
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: allure-report
-        path: reports/allure-report
 
     # ✅ Upload HTML Report
     - name: Upload HTML Report
@@ -74,7 +45,7 @@ jobs:
         name: html-report
         path: reports/test_report.html
 
-    # ✅ Upload Screenshots
+    # ✅ Upload Screenshots (if any)
     - name: Upload Screenshots
       if: always()
       uses: actions/upload-artifact@v4
